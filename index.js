@@ -53,11 +53,19 @@ async function main() {
     const page = await browser.newPage();
     
     for(let i = 0; i < currUrl.length; i++) {
-        console.log(finalUrls[i]);
+        console.log(currUrl[i]);
         const data = await getData(currUrl[i], page);
         scrappedData.push(data);
-        console.log(scrappedData);
+        // console.log(scrappedData);
     }
+
+    // const wb = xlsx.utils.book_new();
+    // const ws = xlsx.utils.json_to_sheet(scrappedData);
+    // xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
+    // xlsx.writeFile(wb, "scrapped-data.xlsx");
+
+
+
     //     console.log(link[1]);
     //     const data = await getData(link, page);
     //     // console.log(data);
