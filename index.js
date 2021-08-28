@@ -7,7 +7,7 @@ const finalUrls = [];
 const scrappedData = [];
 
 
-async function getData(url, page){
+async function getData(url, page, index){
 
     await page.goto(url);
     // await page.goto('https://ticker.finology.in/company/3IINFOTECH');
@@ -18,13 +18,25 @@ async function getData(url, page){
 
     const brand = await page.evaluate(() => {
         let el = document.querySelector("#mainContent_brandsandproducts")
-        return el ? el.innerText : "";
+        return el ? el.textContent : "";
     });
 
-    const companyEssentials = await page.$eval("#companyessentials", companyEssentials => companyEssentials.textContent);
-    const peerComparison = await page.$eval("#Listoutputinner", peerComparison => peerComparison.innerText);
+    const companyEssentials = await page.evaluate(() => {
+        let el = document.querySelector("#companyessentials")
+        return el ? el.textContent : "";
+    });
+    
+    const peerComparison = await page.evaluate(() => {
+        let el = document.querySelector("#Listoutputinner")
+        return el ? el.textContent : "";
+    });
+    
+
+    // const companyEssentials = await page.$eval("#companyessentials", companyEssentials => companyEssentials.textContent);
+    // const peerComparison = await page.$eval("#Listoutputinner", peerComparison => peerComparison.innerText);
 
     return {
+        Company: index,
         Brands : brand,
         CompanyEssentials: companyEssentials, 
         PeerComparison: peerComparison
@@ -54,15 +66,16 @@ async function main() {
     
     for(let i = 0; i < currUrl.length; i++) {
         console.log(currUrl[i]);
-        const data = await getData(currUrl[i], page);
+        const data = await getData(currUrl[i], page, endPoints[i]);
+        
         scrappedData.push(data);
-        // console.log(scrappedData);
+        console.log(scrappedData);
     }
 
-    // const wb = xlsx.utils.book_new();
-    // const ws = xlsx.utils.json_to_sheet(scrappedData);
-    // xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
-    // xlsx.writeFile(wb, "scrapped-data.xlsx");
+    const wb = xlsx.utils.book_new();
+    const ws = xlsx.utils.json_to_sheet(scrappedData);
+    xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
+    xlsx.writeFile(wb, "scr apped-data.xlsx");
 
 
 
