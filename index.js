@@ -4,7 +4,8 @@ const xlsx = require('xlsx');
 const endPoints = require("./list");
 const baseUrl = "https://ticker.finology.in/company/";
 const finalUrls = [];
-const scrappedData = [];
+const scrappedBrands = [];
+const scrappedCompanyEssens = [];
 
 
 async function getData(url, page, index){
@@ -17,29 +18,35 @@ async function getData(url, page, index){
     // });
 
     const brand = await page.evaluate(() => {
-        let el = document.querySelector("#mainContent_brandsandproducts")
-        return el ? el.textContent : "";
+        let el = document.querySelector("#mainContent_brandsandproducts:not(h4)")
+        return el ? el.innerText : "Not Available";
     });
 
     const companyEssentials = await page.evaluate(() => {
-        let el = document.querySelector("#companyessentials")
-        return el ? el.textContent : "";
+        let el = document.querySelector("#mainContent_updAddRatios")
+        return el ? el.innerText : "Not Available";
     });
     
-    const peerComparison = await page.evaluate(() => {
-        let el = document.querySelector("#Listoutputinner")
-        return el ? el.textContent : "";
-    });
+    // const peerComparison = await page.evaluate(() => {
+    //     let el = document.querySelector("thead")
+    //     return el ? el.innerText : "Not Available";
+    // });
+
+
     
 
-    // const companyEssentials = await page.$eval("#companyessentials", companyEssentials => companyEssentials.textContent);
-    // const peerComparison = await page.$eval("#Listoutputinner", peerComparison => peerComparison.innerText);
+    // const about = await page.evaluate(() => {
+    //     let el = document.querySelector(".compbrief p");
+    //     return el ? el.textContent : "Not Available";
+    // });
+
 
     return {
         Company: index,
+        // About: about,
         Brands : brand,
         CompanyEssentials: companyEssentials, 
-        PeerComparison: peerComparison
+        // PeerComparison: peerComparison
     }
 
 
@@ -68,23 +75,15 @@ async function main() {
         console.log(currUrl[i]);
         const data = await getData(currUrl[i], page, endPoints[i]);
         
-        scrappedData.push(data);
-        console.log(scrappedData);
+        scrappedBrands.push(data);
+        // console.log(scrappedData);
     }
 
     const wb = xlsx.utils.book_new();
-    const ws = xlsx.utils.json_to_sheet(scrappedData);
-    xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
-    xlsx.writeFile(wb, "scr apped-data.xlsx");
+    const ws = xlsx.utils.json_to_sheet(scrappedBrand);
+    xlsx.utils.book_append_sheet(wb, ws, "Sheet-1");
+    xlsx.writeFile(wb, "scrapped-data.xlsx");
 
-
-
-    //     console.log(link[1]);
-    //     const data = await getData(link, page);
-    //     // console.log(data);
-    //     scrappedData.push(data);
-    // }
-    // console.log(scrappedData);
 }
 
 
